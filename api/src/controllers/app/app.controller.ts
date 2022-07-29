@@ -1,12 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppManager } from 'src/managers/app/AppManager';
+import { Controller, Get, Inject } from '@nestjs/common';
+import {
+  IAppManager,
+  IAppManagerProvider,
+} from 'src/managers/AppManager/IAppManager';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppManager) {}
+  constructor(
+    @Inject(IAppManagerProvider) private readonly appManager: IAppManager,
+  ) {}
 
   @Get()
   getHello(): string {
-    return this.appService.getHello();
+    return this.appManager.getHello();
   }
 }
