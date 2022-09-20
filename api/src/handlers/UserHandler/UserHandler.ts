@@ -1,23 +1,28 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UserDto } from 'src/infrastructure/dto/UserDto';
-import { dataSourceProviderKey } from 'src/infrastructure/typeorm/database.providers';
-import { User } from 'src/infrastructure/typeorm/entities/User.entity';
-import { DataSource, Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { EntityManager, SqlEntityRepository } from '@mikro-orm/mysql';
 import { IUserHandler } from './IUserHandler';
+import { UserDto } from 'src/infrastructure/dto/UserDto';
+import { User } from 'src/infrastructure/mikroorm/entities/User.entity';
+import { mapToPostDto } from '../PostHandler/PostHandler';
 
 @Injectable()
 export class UserHandler implements IUserHandler {
-  private userRepo: Repository<User>;
-  constructor(@Inject(dataSourceProviderKey) dataSource: DataSource) {
-    this.userRepo = dataSource.getRepository(User);
+  private userRepo: SqlEntityRepository<User>;
+  constructor(em: EntityManager) {
+    this.userRepo = em.getRepository(User);
   }
 
   async getUser(id: number): Promise<UserDto | null> {
-    return mapToUserDto(await this.userRepo.findOne({ where: { id } }));
+    return mapToUserDto(
+      await this.userRepo.findOne({ id }, { populate: ['posts'] }),
+    );
   }
 }
 
-function mapToUserDto(user: User | null) {
+export function mapToUserDto(
+  user: User | null,
+  loadPosts: boolean = true,
+): UserDto | null {
   if (!user) {
     return null;
   }
@@ -25,5 +30,10 @@ function mapToUserDto(user: User | null) {
   userDto.id = user.id;
   userDto.name = user.name;
   userDto.dateCreated = user.dateCreated;
+  if (user.posts.isInitialized() && loadPosts) {
+    userDto.posts = user.posts
+      .getItems()
+      .map((post) => mapToPostDto(post, false));
+  }
   return userDto;
 }
