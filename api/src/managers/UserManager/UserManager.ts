@@ -3,8 +3,7 @@ import {
   IUserEngineProvider,
   IUserEngine,
 } from 'src/engines/UserEngine/IUserEngine';
-import { UserDto } from 'src/infrastructure/dto/UserDto';
-import { IUserManager } from './IUserManager';
+import { GetUserResponse, IUserManager } from './IUserManager';
 
 @Injectable()
 export class UserManager implements IUserManager {
@@ -12,7 +11,9 @@ export class UserManager implements IUserManager {
     @Inject(IUserEngineProvider) private readonly userEngine: IUserEngine,
   ) {}
 
-  async getUser(id: number): Promise<UserDto | null> {
-    return await this.userEngine.getUser(id);
+  async getUser(id: number): Promise<GetUserResponse> {
+    return {
+      user: (await this.userEngine.getUser(id)) ?? null,
+    };
   }
 }
