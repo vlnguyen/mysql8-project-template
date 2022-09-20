@@ -29,6 +29,7 @@ export function mapToUserDto(
   const userDto = new UserDto();
   userDto.id = user.id;
   userDto.name = user.name;
+  userDto.password = user.password;
   userDto.dateCreated = user.dateCreated;
   if (user.posts.isInitialized() && loadPosts) {
     userDto.posts = user.posts
