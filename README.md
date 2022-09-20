@@ -3,7 +3,9 @@
 Creating a template for a full stack web project built around MySQL 8.
 
 - [Running the Project](#running-the-project)
+- [Structure](#structure)
   - [Database / phpMyAdmin](#database--phpmyadmin)
+  - [NestJS API](#nestjs-api)
 
 ## Running the Project
 
@@ -12,6 +14,17 @@ Run the project with the following command which creates the database and starts
 ```
 docker-compose up --build phpmyadmin
 ```
+
+Start the API for local development with the following commands.
+
+```
+cd api
+npm run start:dev
+```
+
+Access the API on `localhost:8080/api`
+
+## Structure
 
 ### Database / phpMyAdmin
 
@@ -23,3 +36,7 @@ The database is accessible on the standard MySQL ports at `localhost:3306` and `
 
 - The default `root` password is `rootpassword`.
 - The default user is `appuser` and its password is `appuserpassword`.
+
+### NestJS API
+
+The [project backend](https://github.com/vlnguyen/mysql8-project-template/blob/master/api/README.md) is built on NestJS for serving the API and mikro-orm for database access.

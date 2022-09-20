@@ -1,38 +1,20 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# NestJS API <!-- omit in toc -->
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The project backend is built on NestJS for serving the API and mikro-orm for database access. The class structure is based around [IDesign](https://medium.com/nmc-techblog/software-architecture-with-the-idesign-method-63716a8329ec) to separate responsibilities into different levels.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- [Running the Project](#running-the-project)
+- ['IDesign' Design Pattern](#idesign-design-pattern)
+  - [Layered Architecture](#layered-architecture)
+    - [Managers](#managers)
+    - [Engines](#engines)
+    - [Handlers](#handlers)
+- [Dependency Injection](#dependency-injection)
+  - [Swapping Handler Implementations](#swapping-handler-implementations)
+  - [Mocking Functions for Testing](#mocking-functions-for-testing)
 
-## Description
+## Running the Project
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
-```
-
-## Running the app
+Run `npm install` to install all dependencies. Then run one of the following to start the project.
 
 ```bash
 # development
@@ -45,29 +27,83 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+The API is available on `localhost:8080/api`
 
-```bash
-# unit tests
-$ npm run test
+## 'IDesign' Design Pattern
 
-# e2e tests
-$ npm run test:e2e
+### Layered Architecture
 
-# test coverage
-$ npm run test:cov
+The backend instructure is divided into 3 levels: managers, engines, handlers.
+
+#### Managers
+
+Managers are responsible for larger workflows. A rule of thumb is that a user action could map to one manager function. They may leverage multiple engines to complete a workflow.
+
+#### Engines
+
+Engines are responsible for smaller tasks that will be used by managers. A lot of business logic is applied at this level. They depend on handlers to interact with the database.
+
+For example, if certain fields need to be calculated before being written to the database, that would be done here so that the handler doesn't have to worry about it.
+
+#### Handlers
+
+Handlers are responsible purely for database access. They should not be responsible for mutating any data before being written to the database or after being read from the database.
+
+Handlers work with generic DTOs that are used as a "common language" across the other layers.
+
+In this example from `UserHandler.ts`, the return value of `this.userRepo.findOne()` returns an entity that is used to interact with mikro-orm. The value must be mapped to a generic `UserDto` instance before being returned so that it can be used by an engine.
+
+```ts
+@Injectable()
+export class UserHandler implements IUserHandler {
+  private userRepo: SqlEntityRepository<User>;
+  constructor(em: EntityManager) {
+    this.userRepo = em.getRepository(User);
+  }
+
+  async getUser(id: number): Promise<UserDto | null> {
+    return mapToUserDto(
+      await this.userRepo.findOne({ id }, { populate: ['posts'] }),
+    );
+  }
+}
 ```
 
-## Support
+## Dependency Injection
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+In `app.module.ts` there are a list of providers that are set. The `provide` is a `string` key and `useClass` is a class reference that should be injected.
 
-## Stay in touch
+```ts
+@Module({
+  controllers: [AppController, UserController],
+  imports: [MikroOrmModule.forRoot()],
+  providers: [
+    { provide: IAppManagerProvider, useClass: AppManager },
+    { provide: IUserHandlerProvider, useClass: UserHandler },
+    { provide: IUserEngineProvider, useClass: UserEngine },
+    { provide: IUserManagerProvider, useClass: UserManager },
+    { provide: IPostHandlerProvider, useClass: PostHandler },
+  ],
+})
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Dependencies can be injected with the `@Inject()` decorator into other classes. Below is an example in `user.controller.ts` of the user manager instance being injected into the controller.
 
-## License
+```ts
+@Controller('user')
+export class UserController {
+  constructor(
+    @Inject(IUserManagerProvider) private readonly userManager: IUserManager,
+  ) {}
+}
+```
 
-Nest is [MIT licensed](LICENSE).
+The value that goes into `@Inject()` is a `string` key that matches the `provide` key from the providers list in `app.module.ts`. The class that's provided from `useClass` is what's injected into the constructor parameters for the class that's injecting it.
+
+### Swapping Handler Implementations
+
+Because handlers have interfaces to define their expected function in addition to returning generic DTO then their implementations can be swapped at any time. For example, to switch to Sequelize, only the handler layer would need to be rewritten.
+
+### Mocking Functions for Testing
+
+Because managers and engines resolve their dependencies through their constructors then we can simplify testing by providing mocked instances of their dependencie directly into their constructors.
