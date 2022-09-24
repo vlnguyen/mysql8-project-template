@@ -15,6 +15,9 @@ export class User {
   @Property({ fieldName: 'user_name', type: 'string' })
   name: string;
 
+  @Property({ fieldName: 'user_password', type: 'string', hidden: true })
+  password: string;
+
   @Property({ fieldName: 'user_date_created', type: 'datetime' })
   dateCreated: Date;
 
