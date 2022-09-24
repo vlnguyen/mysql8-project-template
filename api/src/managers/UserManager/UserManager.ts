@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   IUserEngineProvider,
   IUserEngine,
-} from 'src/engines/UserEngine/IUserEngine';
+} from '../../engines/UserEngine/IUserEngine';
 import { GetUserResponse, IUserManager } from './IUserManager';
 
 @Injectable()

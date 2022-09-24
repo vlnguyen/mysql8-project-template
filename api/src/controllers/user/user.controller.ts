@@ -3,7 +3,7 @@ import {
   GetUserResponse,
   IUserManager,
   IUserManagerProvider,
-} from 'src/managers/UserManager/IUserManager';
+} from '../../managers/UserManager/IUserManager';
 
 @Controller('user')
 export class UserController {

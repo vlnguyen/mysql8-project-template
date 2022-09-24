@@ -75,20 +75,35 @@ export class UserHandler implements IUserHandler {
 
 ## Dependency Injection
 
-In `app.module.ts` there are a list of providers that are set. The `provide` is a `string` key and `useClass` is a class reference that should be injected.
+The API is constructed with a series of modules that encapsulate resources that the application will request and resolve primarily through constructor injection.
 
 ```ts
 @Module({
-  controllers: [AppController, UserController],
-  imports: [MikroOrmModule.forRoot()],
+  imports: [
+    MikroOrmModule.forRoot(),
+    SessionModule,
+    UserModule,
+    AppModule,
+    PostModule,
+  ],
+})
+export class ApiModule {}
+```
+
+Each of these modules is responsible setting up managers, engines, and handlers for injection.
+
+Using `User.module.ts` as an example, there are a list of providers that are set. The `provide` is a `string` key and `useClass` is a class reference that should be injected.
+
+```ts
+@Module({
+  controllers: [UserController],
   providers: [
-    { provide: IAppManagerProvider, useClass: AppManager },
     { provide: IUserHandlerProvider, useClass: UserHandler },
     { provide: IUserEngineProvider, useClass: UserEngine },
     { provide: IUserManagerProvider, useClass: UserManager },
-    { provide: IPostHandlerProvider, useClass: PostHandler },
   ],
 })
+export class UserModule {}
 ```
 
 Dependencies can be injected with the `@Inject()` decorator into other classes. Below is an example in `user.controller.ts` of the user manager instance being injected into the controller.
