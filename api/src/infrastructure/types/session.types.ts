@@ -1,3 +1,4 @@
-export interface ISessionData {
-  visits: number;
+import { SessionData } from 'express-session';
+export interface ISessionData extends SessionData {
+  visits?: number;
 }
