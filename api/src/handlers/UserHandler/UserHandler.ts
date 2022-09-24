@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager, SqlEntityRepository } from '@mikro-orm/mysql';
 import { IUserHandler } from './IUserHandler';
-import { UserDto } from 'src/infrastructure/dto/UserDto';
-import { User } from 'src/infrastructure/mikroorm/entities/User.entity';
+import { UserDto } from '../../infrastructure/dto/UserDto';
+import { User } from '../../infrastructure/mikroorm/entities/User.entity';
 import { mapToPostDto } from '../PostHandler/PostHandler';
 
 @Injectable()

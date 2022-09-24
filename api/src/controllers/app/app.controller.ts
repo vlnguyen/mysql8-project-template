@@ -2,7 +2,7 @@ import { Controller, Get, Inject } from '@nestjs/common';
 import {
   IAppManager,
   IAppManagerProvider,
-} from 'src/managers/AppManager/IAppManager';
+} from '../../managers/AppManager/IAppManager';
 
 @Controller()
 export class AppController {

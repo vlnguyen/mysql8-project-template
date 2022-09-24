@@ -2,8 +2,8 @@ import { Inject } from '@nestjs/common';
 import {
   IUserHandler,
   IUserHandlerProvider,
-} from 'src/handlers/UserHandler/IUserHandler';
-import { UserDto } from 'src/infrastructure/dto/UserDto';
+} from '../../handlers/UserHandler/IUserHandler';
+import { UserDto } from '../../infrastructure/dto/UserDto';
 import { IUserEngine } from './IUserEngine';
 
 export class UserEngine implements IUserEngine {

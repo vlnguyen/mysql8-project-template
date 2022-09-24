@@ -1,4 +1,4 @@
-import { UserDto } from 'src/infrastructure/dto/UserDto';
+import { UserDto } from '../../infrastructure/dto/UserDto';
 
 export const IUserManagerProvider = 'IUserManager';
 export interface IUserManager {

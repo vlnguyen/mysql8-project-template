@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Delete, Session, Req } from '@nestjs/common';
 import { Request } from 'express';
-import { ISessionData } from 'src/infrastructure/types/session.types';
+import { ISessionData } from '../../infrastructure/types/session.types';
 
 @Controller('session')
 export class SessionController {
