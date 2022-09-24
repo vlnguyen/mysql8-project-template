@@ -11,6 +11,10 @@ The project backend is built on NestJS for serving the API and mikro-orm for dat
 - [Dependency Injection](#dependency-injection)
   - [Swapping Handler Implementations](#swapping-handler-implementations)
   - [Mocking Functions for Testing](#mocking-functions-for-testing)
+- [Session Management](#session-management)
+  - [Reading Session](#reading-session)
+  - [Updating Session](#updating-session)
+  - [Clearing Session](#clearing-session)
 
 ## Running the Project
 
@@ -27,7 +31,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-The API is available on `localhost:8080/api`
+The API is available on `localhost:8080/api`. The SQL database and Redis store must be running in order for data access and session management to work.
 
 ## 'IDesign' Design Pattern
 
@@ -107,3 +111,47 @@ Because handlers have interfaces to define their expected function in addition t
 ### Mocking Functions for Testing
 
 Because managers and engines resolve their dependencies through their constructors then we can simplify testing by providing mocked instances of their dependencie directly into their constructors.
+
+## Session Management
+
+Sessions are controlled with the `express-session`, `Redis`, and `connect-redis` packages.
+
+### Reading Session
+
+Session values can be passed through function parameters with the `@Session()` dectorator.
+
+```ts
+@Get()
+getSession(@Session() session: ISessionData) {
+  return {
+    visits: session.visits ?? null,
+  };
+}
+```
+
+### Updating Session
+
+Session values can be mutated by assigning values directly to properties on the `session` parameter.
+
+```ts
+@Post()
+setSessionVisits(@Session() session: ISessionData) {
+  const { visits } = session;
+  const newVisits = visits ? visits + 1 : 1;
+  session.visits = newVisits;
+  return { newVisits };
+}
+```
+
+### Clearing Session
+
+Clearing session requires leveraging the `Request` type from `express` to access the `destroy()` function on the session.
+
+```ts
+@Post('clear')
+clearSession(@Req() request: Request) {
+  let message = 'Successfuly cleared session.';
+  request.session.destroy((e) => (message = e.message));
+  return { message };
+}
+```
