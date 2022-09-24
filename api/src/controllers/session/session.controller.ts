@@ -1,4 +1,5 @@
 import { Controller, Get, Session } from '@nestjs/common';
+import { ISessionData } from 'src/infrastructure/types/session.types';
 
 @Controller('session')
 export class SessionController {
@@ -10,13 +11,17 @@ export class SessionController {
   }
 
   @Get('setMe')
-  setMe(@Session() session: Record<string, any>) {
-    session.visits = session.visits ? session.visits + 1 : 1;
-    return { message: 'Set new value for session.visits' };
+  setMe(@Session() session: ISessionData) {
+    const { visits } = session;
+    const newVisits = visits ? visits + 1 : 1;
+    session.visits = newVisits;
+    return { newVisits };
   }
 
   @Get('getMe')
-  getMe(@Session() session: Record<string, any>) {
-    return session;
+  getMe(@Session() session: ISessionData) {
+    return {
+      visits: session.visits ?? null,
+    };
   }
 }
