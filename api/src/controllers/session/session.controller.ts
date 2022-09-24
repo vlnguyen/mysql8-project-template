@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Session, Req } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Session, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { ISessionData } from 'src/infrastructure/types/session.types';
 
@@ -19,7 +19,7 @@ export class SessionController {
     return { newVisits };
   }
 
-  @Post('clear')
+  @Delete()
   clearSession(@Req() request: Request) {
     let message = 'Successfuly cleared session.';
     request.session.destroy((e) => (message = e.message));
