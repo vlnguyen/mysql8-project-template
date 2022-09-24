@@ -24,7 +24,6 @@ async function bootstrap() {
       secret: 'sesionsecret',
       resave: false,
       saveUninitialized: true,
-      name: 'connect.sid',
       cookie: {
         maxAge: 3600000, // 1 hour
       },
