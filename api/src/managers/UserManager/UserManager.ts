@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { UserDto } from 'src/infrastructure/dto/UserDto';
 import {
   IUserEngineProvider,
   IUserEngine,
 } from '../../engines/UserEngine/IUserEngine';
-import { GetUserResponse, IUserManager } from './IUserManager';
+import { IUserManager } from './IUserManager';
 
 @Injectable()
 export class UserManager implements IUserManager {
@@ -11,9 +12,7 @@ export class UserManager implements IUserManager {
     @Inject(IUserEngineProvider) private readonly userEngine: IUserEngine,
   ) {}
 
-  async getUser(id: number): Promise<GetUserResponse> {
-    return {
-      user: (await this.userEngine.getUser(id)) ?? null,
-    };
+  async getUser(id: number): Promise<UserDto | null> {
+    return (await this.userEngine.getUser(id)) ?? null;
   }
 }

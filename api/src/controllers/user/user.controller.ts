@@ -1,6 +1,6 @@
 import { Controller, Get, Inject, Param } from '@nestjs/common';
+import { UserDto } from 'src/infrastructure/dto/UserDto';
 import {
-  GetUserResponse,
   IUserManager,
   IUserManagerProvider,
 } from '../../managers/UserManager/IUserManager';
@@ -12,8 +12,15 @@ export class UserController {
   ) {}
 
   @Get(':id')
-  async getUser(@Param() params): Promise<GetUserResponse> {
+  async getUser(
+    @Param() params: { id: string },
+  ): Promise<IApiResponse<UserDto | null>> {
     const id = parseInt(params.id);
-    return await this.userManager.getUser(id);
+    const user = await this.userManager.getUser(id);
+    return {
+      success: !!user,
+      message: '',
+      data: user,
+    };
   }
 }
