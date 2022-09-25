@@ -12,10 +12,20 @@ export class UserHandler implements IUserHandler {
     this.userRepo = em.getRepository(User);
   }
 
-  async getUser(id: number): Promise<UserDto | null> {
+  async getUser(
+    id: number,
+    includePosts: boolean = false,
+  ): Promise<UserDto | null> {
     return mapToUserDto(
-      await this.userRepo.findOne({ id }, { populate: ['posts'] }),
+      await this.userRepo.findOne(
+        { id },
+        { populate: includePosts && ['posts'] },
+      ),
     );
+  }
+
+  async getUserByUsername(username: string): Promise<UserDto> {
+    return mapToUserDto(await this.userRepo.findOne({ name: username }));
   }
 }
 
