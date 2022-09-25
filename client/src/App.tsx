@@ -7,6 +7,8 @@ import React, {
 import Axios from "axios";
 import { SessionDisplay } from "./components/SessionDisplay";
 import { AppContext, ISession } from "./AppContext";
+import { Login } from "./components/Login";
+import { UserDisplay } from "./components/UserDisplay";
 import "./App.css";
 
 function App() {
@@ -37,6 +39,20 @@ function App() {
     await loadSession();
   }
 
+  async function login(username: string, password: string) {
+    await Axios.request({
+      url: "/api/session/login",
+      method: "POST",
+      data: { username, password },
+    }).then((resp) => resp.data);
+    await loadSession();
+  }
+
+  async function logout() {
+    await Axios.request({ url: "/api/session/logout", method: "POST" });
+    await loadSession();
+  }
+
   useLayoutEffect(() => {
     loadSession();
   }, [loadSession]);
@@ -52,11 +68,15 @@ function App() {
         addVisit,
         loadSession,
         clearSession,
+        login,
+        logout,
       }}
     >
       <div className="App">
         <header className="App-header">
           <p>{helloWorld}</p>
+          {!session?.userId && <Login />}
+          <UserDisplay />
           <SessionDisplay />
         </header>
       </div>

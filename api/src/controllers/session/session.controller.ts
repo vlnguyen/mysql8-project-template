@@ -29,17 +29,16 @@ export class SessionController {
     @Body('password') password?: string,
   ): Promise<IApiResponse> {
     const userId = await this.sessionManager.login(username, password);
-    const success = !!userId;
-    session.isLoggedIn = success;
+    session.userId = userId || undefined;
     return {
-      success,
-      message: success ? 'Login successful.' : 'Incorrect username/password.',
+      success: !!userId,
+      message: !!userId ? 'Login successful.' : 'Incorrect username/password.',
     };
   }
 
   @Post('logout')
   logout(@Session() session: ISessionData): IApiResponse {
-    session.isLoggedIn = false;
+    session.userId = undefined;
     return { success: true, message: '' };
   }
 

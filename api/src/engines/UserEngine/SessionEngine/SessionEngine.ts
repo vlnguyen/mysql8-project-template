@@ -13,6 +13,6 @@ export class SessionEngine implements ISessionEngine {
 
   async login(username: string, password: string): Promise<number | null> {
     const user = await this.userHandler.getUserByUsername(username);
-    return user && user.password !== password ? user.id : null;
+    return user && user.password === password ? user.id : null;
   }
 }
