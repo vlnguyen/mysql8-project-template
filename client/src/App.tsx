@@ -22,13 +22,13 @@ function App() {
 
   const loadSession = useCallback(async () => {
     const data = await Axios.request({ url: "/api/session" }).then(
-      (resp) => resp.data as ISession
+      (resp) => resp.data.data as ISession
     );
     setSession(data);
   }, []);
 
   async function addVisit() {
-    await Axios.request({ url: "/api/session", method: "POST" });
+    await Axios.request({ url: "/api/session/visit", method: "POST" });
     await loadSession();
   }
 
