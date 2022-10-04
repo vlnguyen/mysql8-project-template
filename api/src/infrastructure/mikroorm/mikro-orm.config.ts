@@ -4,8 +4,8 @@ import { User } from './entities/User.entity';
 // TODO: load config from environment
 export default {
   type: 'mysql',
-  host: 'localhost',
-  port: 3306,
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 3306,
   user: 'appuser',
   password: 'appuserpassword',
   dbName: 'application',

@@ -11,7 +11,10 @@ async function bootstrap() {
   // TODO: load config from environment
   const RedisStore = connectRedis(session);
   const redisClient = Redis.createClient({
-    socket: { port: 6379, host: 'localhost' },
+    socket: {
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT) || 6379,
+    },
     password: 'redispassword',
     legacyMode: true,
   });
