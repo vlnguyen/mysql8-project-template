@@ -27,3 +27,22 @@ services:
     ports: 
       - 6379:6379
     command: redis-server --requirepass redispassword
+
+  # api
+  api:
+    depends_on: [db, phpmyadmin, redis]
+    build: ./api
+    ports:
+      - 8080:8080
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=db
+      - DB_PORT=3306
+
+  # client
+  client:
+    depends_on: [api]
+    build: ./client
+    ports:
+      - 8000:80
