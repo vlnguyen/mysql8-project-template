@@ -15,8 +15,8 @@ services:
   # phpMyAdmin
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
-    depends_on: [db]
-    ports: [8081:80]
+    depends_on: [ db ]
+    ports: [ 8081:80 ]
     environment:
       - MYSQL_ROOT_PASSWORD=rootpassword
       - PMA_HOST=db
@@ -24,29 +24,30 @@ services:
   # redis
   redis:
     image: redis:latest
-    ports: 
+    ports:
       - 6379:6379
     command: redis-server --requirepass redispassword
 
   # api
   api:
-    depends_on: [db, phpmyadmin, redis]
+    depends_on: [ db, phpmyadmin, redis ]
     build: ./api
     ports:
       - 8080:8080
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=redispassword
-      - SESSION_SECRET=sessionsecret
       - DB_HOST=db
+      - DB_NAME=application
+      - DB_PASSWORD=appuserpassword
       - DB_PORT=3306
       - DB_USER=appuser
-      - DB_PASSWORD=appuserpassword
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=redispassword
+      - REDIS_PORT=6379
+      - SESSION_SECRET=sessionsecret
 
   # client
   client:
-    depends_on: [api]
+    depends_on: [ api ]
     build: ./client
     ports:
       - 8000:80

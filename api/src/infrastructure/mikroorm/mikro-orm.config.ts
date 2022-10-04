@@ -8,7 +8,7 @@ export default {
   port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'appuser',
   password: process.env.DB_PASSWORD || 'appuserpassword',
-  dbName: 'application',
+  dbName: process.env.DB_NAME || 'application',
   entities: [User, Post],
   entitiesTs: ['./src/infrastructure/mikroorm/entities/*.ts'],
 };
