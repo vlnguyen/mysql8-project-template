@@ -15,7 +15,7 @@ async function bootstrap() {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT) || 6379,
     },
-    password: 'redispassword',
+    password: process.env.REDIS_PASSWORD || 'redispassword',
     legacyMode: true,
   });
 
@@ -24,7 +24,7 @@ async function bootstrap() {
   app.use(
     session({
       store: new RedisStore({ client: redisClient }),
-      secret: 'sesionsecret',
+      secret: process.env.SESSION_SECRET || 'sessionsecret',
       resave: false,
       saveUninitialized: true,
       cookie: {
