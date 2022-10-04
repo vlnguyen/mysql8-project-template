@@ -13,7 +13,6 @@ My main goal with this template was to solve a minimum set of requirements.
 - Deployment with an easy way to set different environment variables
 
 I also have a set of stretch goals that I'm unsure about only because it deals with domains that I'm unfamiliar with.
-- Containerization to simplify serving both the server and client
 - Auto-documentation through something like Swagger
 - Using GitHub Actions for continuous deployment
 - Integrating tests in the deployment pipeline
@@ -44,20 +43,13 @@ Knowing the pace that web development moves there's uncertainty how long these p
 
 ## Running the Project
 
-Run the project with the following command which creates the database and starts phpMyAdmin for database management, as well as the Redis store for session management.
+The entire project can be built with `docker-compose`, which builds the client and serves it with nginx, as well as stands up the API connected to MySQL 8 and Redis.
 
-```
-docker-compose up --build redis phpmyadmin
-```
-
-Start the API for local development with the following commands.
-
-```
-cd api
-npm run start:dev
+```sh
+docker-compose up --build client
 ```
 
-Access the API on `localhost:8080/api`
+The site will be available on `http://localhost:8000`.
 
 ## Structure
 
