@@ -1,2 +1,12 @@
-- name: Deploy to Fly
-  uses: superfly/flyctl-actions@1.1
+name: Deploy to Fly
+on: [push]
+jobs:
+  deploy:
+    name: Deploy proxy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_ACCESS_TOKEN: ${{ secrets.FLY_ACCES_TOKEN }}
