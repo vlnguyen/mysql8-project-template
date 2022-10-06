@@ -1,0 +1,5 @@
+build:
+  docker:
+    api: ./api/Dockerfile
+run:
+  api: node dist/main.js
