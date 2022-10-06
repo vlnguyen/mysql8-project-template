@@ -1,0 +1,27 @@
+# fly.toml file generated for mysql8-project-database on 2022-10-06T12:14:35-07:00
+
+app = "mysql8-project-database"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[build]
+  image = "mysql:8"
+
+[env]
+  MYSQL_DATABASE = "application"
+  MYSQL_USER = "appuser"
+
+[[services]]
+  internal_port = 3306
+  protocol = "tcp"
+
+[[services.ports]]
+  handlers = []
+  port = 10000
+
+[experimental]
+  allowed_public_ports = []
+  cmd = ["--default-authentication-plugin", "mysql_native_password", "--datadir", "/data/mysql", "--performance-schema=OFF", "--innodb-buffer-pool-size", "64M"]
+  entrypoint = []
+  exec = []
