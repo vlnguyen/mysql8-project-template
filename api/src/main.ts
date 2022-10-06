@@ -8,11 +8,13 @@ async function bootstrap() {
   const app = await NestFactory.create(ApiModule);
   app.setGlobalPrefix('api');
 
-  // TODO: load config from environment
   const RedisStore = connectRedis(session);
   const redisClient = Redis.createClient({
-    socket: { port: 6379, host: 'localhost' },
-    password: 'redispassword',
+    socket: {
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT) || 6379,
+    },
+    password: process.env.REDIS_PASSWORD || 'redispassword',
     legacyMode: true,
   });
 
@@ -21,7 +23,7 @@ async function bootstrap() {
   app.use(
     session({
       store: new RedisStore({ client: redisClient }),
-      secret: 'sesionsecret',
+      secret: process.env.SESSION_SECRET || 'sessionsecret',
       resave: false,
       saveUninitialized: true,
       cookie: {
@@ -30,6 +32,6 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(8080);
+  await app.listen(process.env.PORT || 8080);
 }
 bootstrap();
