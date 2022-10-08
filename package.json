@@ -1,0 +1,12 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "fly:prod:deploy": "flyctl --config fly.prod.toml deploy",
+    "fly:prod:envs": "flyctl --config fly.prod.toml secrets list",
+    "fly:staging:deploy": "flyctl deploy",
+    "fly:staging:envs": "flyctl secrets list"
+  },
+  "license": "ISC"
+}
